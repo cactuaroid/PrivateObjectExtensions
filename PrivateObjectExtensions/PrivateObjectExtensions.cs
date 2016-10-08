@@ -10,77 +10,81 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
     /// </summary>
     public static class PrivateObjectExtensions
     {
-        public static object GetPrivateField(this object obj, string name)
+        /// <summary>
+        /// Get from private (and any other) member.
+        /// If the real type of specified object doesn't contain the specified member,
+        /// it will be automatically search from base type.
+        /// </summary>
+        /// <param name="obj">target object</param>
+        /// <param name="name">member name</param>
+        /// <returns>Object got from the member</returns>
+        /// <exception cref="ArgumentException">name is not a member of obj</exception>
+        public static object GetPrivate(this object obj, string name)
         {
-            return GetPrivateObject(obj, name).GetField(name);
+            Type type;
+            if (TryFindInstanceMemberOwnerType(obj, name, out type))
+            {
+                return new PrivateObject(obj, new PrivateType(type)).GetFieldOrProperty(name);
+            }
+            else if (TryFindStaticMemberOwnerType(obj, name, out type))
+            {
+                return new PrivateType(type).GetStaticFieldOrProperty(name);
+            }
+
+            throw new ArgumentException(name + " is not a member of " + obj.GetType());
         }
 
-        public static T GetPrivateField<T>(this object obj, string name)
+        /// <summary>
+        /// Get from private (and any other) member with casting the return value.
+        /// If the real type of specified object doesn't contain the specified member,
+        /// it will be automatically search from base type.
+        /// </summary>
+        /// <typeparam name="T">type for casting the return value</typeparam>
+        /// <param name="obj">target object</param>
+        /// <param name="name">member name</param>
+        /// <returns>Object got from the member</returns>
+        /// <exception cref="ArgumentException">name is not a member of obj</exception>
+        public static T GetPrivate<T>(this object obj, string name)
         {
-            return (T)GetPrivateField(obj, name);
+            return (T)GetPrivate(obj, name);
         }
 
-        public static object GetPrivateFieldOrProperty(this object obj, string name)
+        /// <summary>
+        /// Set to private (and any other) member.
+        /// If the real type of specified object doesn't contain the specified member,
+        /// it will be automatically search from base type.
+        /// </summary>
+        /// <param name="obj">target object</param>
+        /// <param name="name">member name</param>
+        /// <param name="value">value to set</param>
+        /// <exception cref="ArgumentException">name is not a member of obj</exception>
+        public static void SetPrivate(this object obj, string name, object value)
         {
-            return GetPrivateObject(obj, name).GetFieldOrProperty(name);
+            Type type;
+            if (TryFindInstanceMemberOwnerType(obj, name, out type))
+            {
+                new PrivateObject(obj, new PrivateType(type)).SetFieldOrProperty(name, value);
+                return;
+            }
+            else if (TryFindStaticMemberOwnerType(obj, name, out type))
+            {
+                new PrivateType(type).SetStaticFieldOrProperty(name, value);
+                return;
+            }
+
+            throw new ArgumentException(name + " is not a member of " + obj.GetType());
         }
 
-        public static T GetPrivateFieldOrProperty<T>(this object obj, string name)
+        private static bool TryFindInstanceMemberOwnerType(object obj, string memberName, out Type ownerType)
         {
-            return (T)GetPrivateFieldOrProperty(obj, name);
+            ownerType = FindMemberOwnerType(obj.GetType(), memberName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance);
+            return (ownerType != null);
         }
 
-        public static object GetPrivateProperty(this object obj, string name)
+        private static bool TryFindStaticMemberOwnerType(object obj, string memberName, out Type ownerType)
         {
-            return GetPrivateObject(obj, name).GetProperty(name);
-        }
-
-        public static T GetPrivateProperty<T>(this object obj, string name)
-        {
-            return (T)GetPrivateProperty(obj, name);
-        }
-
-        public static object InvokePrivate(this object obj, string name, params object[] args)
-        {
-            return GetPrivateObject(obj, name).Invoke(name, args);
-        }
-
-        public static T InvokePrivate<T>(this object obj, string name, params object[] args)
-        {
-            return (T)InvokePrivate(obj, name, args);
-        }
-
-        public static object InvokePrivate(this object obj, string name, Type[] parameterTypes, object[] args)
-        {
-            return GetPrivateObject(obj, name).Invoke(name, parameterTypes, args);
-        }
-
-        public static T InvokePrivate<T>(this object obj, string name, Type[] parameterTypes, object[] args)
-        {
-            return (T)InvokePrivate(obj, name, parameterTypes, args);
-        }
-
-        public static void SetPrivateField(this object obj, string name, object value)
-        {
-            GetPrivateObject(obj, name).SetField(name, value);
-        }
-
-        public static void SetPrivateFieldOrProperty(this object obj, string name, object value)
-        {
-            GetPrivateObject(obj, name).SetFieldOrProperty(name, value);
-        }
-
-        public static void SetPrivateProperty(this object obj, string name, object value)
-        {
-            GetPrivateObject(obj, name).SetProperty(name, value);
-        }
-
-        private static PrivateObject GetPrivateObject(object obj, string memberName)
-        {
-            var ownerType = FindMemberOwnerType(obj.GetType(), memberName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            if (ownerType == null) { throw new ArgumentException(memberName + " is not a member of " + obj.GetType()); }
-
-            return new PrivateObject(obj, new PrivateType(ownerType));
+            ownerType = FindMemberOwnerType(obj.GetType(), memberName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Static);
+            return (ownerType != null);
         }
 
         private static Type FindMemberOwnerType(Type objectType, string memberName, BindingFlags bindingFlags)
