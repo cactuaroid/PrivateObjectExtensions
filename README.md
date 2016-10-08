@@ -45,16 +45,17 @@ Why PrivateObjectExtensions?
 ---
 PrivateObject doesn't allow you to access if the member is declared in base type unless you specify that type in constructor like this:
 ```csharp
-// this works
+// without PrivateObjectExtensions
 var targetType = // find the type declaring the member somehow
 var po = new PrivateObject(yourObject, new PrivateType(typeof(taragetType));
 po.GetField("_private");
 ```
 Additionally, if you want to access static member, you have to use PrivateType instead of PrivateObject like this:
 ```csharp
+// without PrivateObjectExtensions
 var pt = new PrivateType(yourObject.GetType());
 pt.GetStaticField("_privateStatic");
 ```
-But these are totally useless works. What we want to do is just accessing private member simply regardless of it's real type or static.
+But these are totally useless works. What we want to do is just accessing private member simply regardless of it's real type or static. PrivateObjectExtensions automatically find proper way to access the member. No need to concern about them all!
 
-PrivateObjectExtensions automatically find proper way to access the member. No need to concern about them all!
+This is powerful when you are using mock object for instance [Moq](https://github.com/moq). Moq mocks an object by inheriting the type. Therefore once we create an instance as a mock object, it's hard to access private member of it. In case of replacing private field, the normal workaround is to make ```protected virtual``` property to allow Moq to access it, and then use ```Mock<T>.Protected().Setup().Return()``` to customize the return value. It's awful.
