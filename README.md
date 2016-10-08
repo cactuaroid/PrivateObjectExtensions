@@ -1,7 +1,7 @@
 PrivateObjectExtensions
 ---
 PrivateObjectExtensions is one wrapper class providing extension methods for [PrivateObject](https://msdn.microsoft.com/en-us/library/microsoft.visualstudio.testtools.unittesting.privateobject.aspx). PrivateObjectExtensions allows you to
-- get/set private member by simple extension methods
+- get/set private (and any other) member by simple extension methods
 - even if the member is declared in base type
 
 Sample
@@ -36,6 +36,8 @@ public void SetMembers()
     // ...
 }
 ```
+```GetPrivate()``` is a wrapper of ```PrivateObject.GetFieldOrProperty()``` and ```PrivateType.GetStaticFieldOrProperty()```.
+```SetPrivate()``` is a wrapper of ```PrivateObject.SetFieldOrProperty()``` and ```PrivateType.SetStaticFieldOrProperty()```.
 
 How to Use
 ---
