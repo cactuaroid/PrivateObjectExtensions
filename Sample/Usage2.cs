@@ -9,6 +9,7 @@ namespace Sample
         private class Base
         {
             private string _private = "base";
+            private object _object = null;
 
             protected string Property { get { return "property"; } }
         }
@@ -46,7 +47,33 @@ namespace Sample
 
             Assert.AreEqual("base", derived.GetPrivate<string>("_private"));
             Assert.AreEqual(123, derived.GetPrivate<int>("_private"));
-            Assert.AreEqual(123, derived.GetPrivate<object>("_private")); // same as GetPrivate("_private")
+        }
+
+        [TestMethod]
+        public void GettingValueTypeNotAllowsBaseType()
+        {
+            var derived = new Derived();
+
+            try
+            {
+                derived.GetPrivate<object>("_private");
+            }
+            catch(ArgumentException)
+            {
+                return;
+            }
+
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void SettingValueTypeAllowsDerivedType()
+        {
+            var derived = new Derived();
+
+            derived.SetPrivate("_object", "string");
+
+            Assert.AreEqual("string", derived.GetPrivate("_object"));
         }
 
         [TestMethod]

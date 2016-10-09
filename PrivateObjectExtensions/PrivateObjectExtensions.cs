@@ -85,15 +85,16 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
         {
             if (obj == null) { throw new ArgumentNullException("obj"); }
             if (name == null) { throw new ArgumentNullException("name"); }
+            if (string.IsNullOrWhiteSpace(name)) { throw new ArgumentException("name has to be not null or white space.", "name"); }
             if (objType == null) { throw new ArgumentNullException("objType"); }
             if (!objType.IsAssignableFrom(obj.GetType())) { throw new ArgumentException(objType + " is invalid type for this object", "objType"); }
 
             Type ownerType;
-            if (TryFindInstanceFieldOrPropertyOwnerType(objType, name, memberType, out ownerType))
+            if (TryFindInstanceFieldOrPropertyOwnerType(objType, name, memberType, (actualType) => actualType == memberType, out ownerType))
             {
                 return new PrivateObject(obj, new PrivateType(ownerType)).GetFieldOrProperty(name);
             }
-            else if (TryFindStaticFieldOrPropertyOwnerType(objType, name, memberType, out ownerType))
+            else if (TryFindStaticFieldOrPropertyOwnerType(objType, name, memberType, (actualType) => actualType == memberType, out ownerType))
             {
                 return new PrivateType(ownerType).GetStaticFieldOrProperty(name);
             }
@@ -134,17 +135,18 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
         {
             if (obj == null) { throw new ArgumentNullException("obj"); }
             if (name == null) { throw new ArgumentNullException("name"); }
+            if (string.IsNullOrWhiteSpace(name)) { throw new ArgumentException("name has to be not null or white space.", "name"); }
             if (value == null) { throw new ArgumentNullException("value"); }
             if (objType == null) { throw new ArgumentNullException("objType"); }
             if (!objType.IsAssignableFrom(obj.GetType())) { throw new ArgumentException(objType + " is invalid type for this object", "objType"); }
 
             Type ownerType;
-            if (TryFindInstanceFieldOrPropertyOwnerType(objType, name, typeof(T), out ownerType))
+            if (TryFindInstanceFieldOrPropertyOwnerType(objType, name, typeof(T), (actualType) => actualType.IsAssignableFrom(typeof(T)), out ownerType))
             {
                 new PrivateObject(obj, new PrivateType(ownerType)).SetFieldOrProperty(name, value);
                 return;
             }
-            else if (TryFindStaticFieldOrPropertyOwnerType(objType, name, typeof(T), out ownerType))
+            else if (TryFindStaticFieldOrPropertyOwnerType(objType, name, typeof(T), (actualType) => actualType.IsAssignableFrom(typeof(T)), out ownerType))
             {
                 new PrivateType(ownerType).SetStaticFieldOrProperty(name, value);
                 return;
@@ -153,21 +155,21 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
             throw new ArgumentException(typeof(T) + " " + name + " is not found");
         }
 
-        private static bool TryFindInstanceFieldOrPropertyOwnerType(Type objType, string name, Type memberType, out Type ownerType)
+        private static bool TryFindInstanceFieldOrPropertyOwnerType(Type objType, string name, Type memberType, Func<Type, bool> memberTypeMatching, out Type ownerType)
         {
-            ownerType = FindFieldOrPropertyOwnerType(objType, name, memberType, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance);
+            ownerType = FindFieldOrPropertyOwnerType(objType, name, memberType, memberTypeMatching, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance);
             return (ownerType != null);
         }
 
-        private static bool TryFindStaticFieldOrPropertyOwnerType(Type objType, string name, Type memberType, out Type ownerType)
+        private static bool TryFindStaticFieldOrPropertyOwnerType(Type objType, string name, Type memberType, Func<Type, bool> memberTypeMatching, out Type ownerType)
         {
-            ownerType = FindFieldOrPropertyOwnerType(objType, name, memberType, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Static);
+            ownerType = FindFieldOrPropertyOwnerType(objType, name, memberType, memberTypeMatching, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Static);
             return (ownerType != null);
         }
 
-        private static Type FindFieldOrPropertyOwnerType(Type objectType, string name, Type memberType, BindingFlags bindingFlags)
+        private static Type FindFieldOrPropertyOwnerType(Type objectType, string name, Type memberType, Func<Type, bool> memberTypeMatching, BindingFlags bindingFlags)
         {
-            if (string.IsNullOrWhiteSpace(name)) { throw new ArgumentException("name has to be not null or white space.", "name"); }
+            if (objectType == null) { return null; }
 
             var fields = objectType
                 .GetFields(bindingFlags)
@@ -179,10 +181,14 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 
             var members = fields.Concat(properties);
 
-            if (members.Any((x) => ((memberType != null) ? memberType.IsAssignableFrom(x.Type) : true) && x.Member.Name == name)) { return objectType; }
-            if (objectType.BaseType == null) { return null; }
+            if (members.Any((actual) =>
+                (((memberType == null) ? true : memberTypeMatching.Invoke(actual.Type))
+                && actual.Member.Name == name)))
+            {
+                return objectType;
+            }
 
-            return FindFieldOrPropertyOwnerType(objectType.BaseType, name, memberType, bindingFlags);
+            return FindFieldOrPropertyOwnerType(objectType.BaseType, name, memberType, memberTypeMatching, bindingFlags);
         }
     }
 }
