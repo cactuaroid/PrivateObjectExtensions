@@ -4,20 +4,20 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Sample
 {
     [TestClass]
-    public class UnitTest2
+    public class Usage2
     {
         private class Base
         {
             private string _private = "base";
 
-            private string Property { get { return "property"; } }
+            protected string Property { get { return "property"; } }
         }
 
         private class Derived : Base
         {
             private string _private = "derived";
 
-            public string Property()
+            new public string Property() // this hides 'Base.Property'
             {
                 return "method";
             }
@@ -29,6 +29,14 @@ namespace Sample
             var derivedAsBase = new Derived() as Base;
 
             Assert.AreEqual("derived", derivedAsBase.GetPrivate("_private"));
+        }
+
+        [TestMethod]
+        public void CanSpecifyTypeForSeaching()
+        {
+            var derived = new Derived();
+
+            Assert.AreEqual("base", derived.GetPrivate("_private", typeof(Base)));
         }
 
         [TestMethod]
