@@ -27,7 +27,7 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
         }
 
         /// <summary>
-        /// Get from private (and any other) field/property with casting the return value.
+        /// Get from private (and any other) field/property.
         /// If the real type of specified object doesn't contain the specified field/property,
         /// it will be automatically search from base type.
         /// </summary>
@@ -63,7 +63,7 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
         }
 
         /// <summary>
-        /// Get from private (and any other) field/property with assuming the specified object as specified type with casting the return value.
+        /// Get from private (and any other) field/property with assuming the specified object as specified type.
         /// If the specified type doesn't contain the specified field/property,
         /// it will be automatically search from base type.
         /// </summary>
