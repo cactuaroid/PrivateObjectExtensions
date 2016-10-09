@@ -1,7 +1,7 @@
 PrivateObjectExtensions
 ---
 PrivateObjectExtensions is one wrapper class providing extension methods for [PrivateObject](https://msdn.microsoft.com/en-us/library/microsoft.visualstudio.testtools.unittesting.privateobject.aspx). PrivateObjectExtensions allows you to
-- get/set private (and any other) member by simple extension methods
+- get/set private (and any other) fields/properties by simple extension methods
 - even if the member is declared in base type
 
 Sample
@@ -36,8 +36,10 @@ public void SetMembers()
     // ...
 }
 ```
-```GetPrivate()``` is a wrapper of ```PrivateObject.GetFieldOrProperty()``` and ```PrivateType.GetStaticFieldOrProperty()```.
-```SetPrivate()``` is a wrapper of ```PrivateObject.SetFieldOrProperty()``` and ```PrivateType.SetStaticFieldOrProperty()```.
+- ```GetPrivate()``` is a wrapper of ```PrivateObject.GetFieldOrProperty()``` and ```PrivateType.GetStaticFieldOrProperty()```.
+- ```SetPrivate()``` is a wrapper of ```PrivateObject.SetFieldOrProperty()``` and ```PrivateType.SetStaticFieldOrProperty()```.
+
+See more samples in Sample project.
 
 How to Use
 ---
@@ -45,19 +47,19 @@ Simply refer PrivateObjectExtensions project from your unit test project or copy
 
 Why PrivateObjectExtensions?
 ---
-PrivateObject doesn't allow you to access if the member is declared in base type unless you specify that type in constructor like this:
+PrivateObject doesn't allow you to access if the member is declared in base type unless you specify that type.
 ```csharp
 // without PrivateObjectExtensions
 var targetType = // find the type declaring the member somehow
 var po = new PrivateObject(yourObject, new PrivateType(targetType);
 po.GetField("_private");
 ```
-Additionally, if you want to access static member, you have to use PrivateType instead of PrivateObject like this:
+Additionally, if you want to access static member, you have to use different way.
 ```csharp
 // without PrivateObjectExtensions
 var pt = new PrivateType(yourObject.GetType());
 pt.GetStaticField("_privateStatic");
 ```
-But these are totally useless works. What we want to do is just accessing private member simply regardless of it's real type or static. PrivateObjectExtensions automatically find proper way to access the member. No need to concern about them all!
+These are totally useless works. What we want to do is just accessing private member simply regardless of it's real type or static. PrivateObjectExtensions automatically find the way to access the member. No need to concern about them all!
 
-This is powerful when you are mocking by inheriting, for instance using [Moq](https://github.com/moq). Moq mocks an object by inheriting the type. Once we create an instance as a mock object, it's hard to access private member of it. In case of replacing private field, the normal workaround is to make it ```protected virtual``` property to allow Moq to access it, and then use ```Mock<T>.Protected().Setup().Return()``` to customize the return value. However, you can directly access by using PrivateObjectExtensions.
+This is useful especially when you are mocking by inheriting, for instance using [Moq](https://github.com/moq). Moq mocks an object by inheriting the type. Once we create an instance as a mock object, we have to access private member as above. However, you can simply access by using PrivateObjectExtensions.
