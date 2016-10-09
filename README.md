@@ -49,7 +49,7 @@ PrivateObject doesn't allow you to access if the member is declared in base type
 ```csharp
 // without PrivateObjectExtensions
 var targetType = // find the type declaring the member somehow
-var po = new PrivateObject(yourObject, new PrivateType(typeof(taragetType));
+var po = new PrivateObject(yourObject, new PrivateType(targetType);
 po.GetField("_private");
 ```
 Additionally, if you want to access static member, you have to use PrivateType instead of PrivateObject like this:
