@@ -140,13 +140,14 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
             if (objType == null) { throw new ArgumentNullException("objType"); }
             if (!objType.IsAssignableFrom(obj.GetType())) { throw new ArgumentException(objType + " is invalid type for this object", "objType"); }
 
+            var memberType = typeof(T);
             Type ownerType;
-            if (TryFindInstanceFieldOrPropertyOwnerType(objType, name, typeof(T), (actualType) => actualType.IsAssignableFrom(typeof(T)), out ownerType))
+            if (TryFindInstanceFieldOrPropertyOwnerType(objType, name, memberType, (actualType) => actualType.IsAssignableFrom(memberType), out ownerType))
             {
                 new PrivateObject(obj, new PrivateType(ownerType)).SetFieldOrProperty(name, value);
                 return;
             }
-            else if (TryFindStaticFieldOrPropertyOwnerType(objType, name, typeof(T), (actualType) => actualType.IsAssignableFrom(typeof(T)), out ownerType))
+            else if (TryFindStaticFieldOrPropertyOwnerType(objType, name, memberType, (actualType) => actualType.IsAssignableFrom(memberType), out ownerType))
             {
                 new PrivateType(ownerType).SetStaticFieldOrProperty(name, value);
                 return;
@@ -182,8 +183,8 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
             var members = fields.Concat(properties);
 
             if (members.Any((actual) =>
-                (((memberType == null) ? true : memberTypeMatching.Invoke(actual.Type))
-                && actual.Member.Name == name)))
+                (memberType == null || memberTypeMatching.Invoke(actual.Type))
+                && actual.Member.Name == name))
             {
                 return objectType;
             }
