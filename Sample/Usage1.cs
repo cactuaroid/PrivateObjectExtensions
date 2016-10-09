@@ -55,14 +55,5 @@ namespace Sample
             Assert.AreEqual("changed", derived.GetPrivate("PublicStatic"));
             Assert.AreEqual("changed", derived.GetPrivate("PublicVirtual"));
         }
-
-        [TestMethod]
-        public void CanSpecifyReturnValueType()
-        {
-            var derived = new Derived();
-
-            string value = derived.GetPrivate<string>("_private");
-            Assert.IsNotNull(value);
-        }
     }
 }

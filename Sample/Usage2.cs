@@ -15,7 +15,7 @@ namespace Sample
 
         private class Derived : Base
         {
-            private string _private = "derived";
+            private int _private = 123;
 
             new public string Property() // this hides 'Base.Property'
             {
@@ -28,15 +28,25 @@ namespace Sample
         {
             var derivedAsBase = new Derived() as Base;
 
-            Assert.AreEqual("derived", derivedAsBase.GetPrivate("_private"));
+            Assert.AreEqual(123, derivedAsBase.GetPrivate("_private"));
         }
 
         [TestMethod]
-        public void CanSpecifyTypeForSeaching()
+        public void CanSpecifyObjectTypeForSeaching()
         {
             var derived = new Derived();
 
             Assert.AreEqual("base", derived.GetPrivate("_private", typeof(Base)));
+        }
+
+        [TestMethod]
+        public void CanSpecifyValueTypeForSeaching()
+        {
+            var derived = new Derived();
+
+            Assert.AreEqual("base", derived.GetPrivate<string>("_private"));
+            Assert.AreEqual(123, derived.GetPrivate<int>("_private"));
+            Assert.AreEqual(123, derived.GetPrivate<object>("_private")); // same as GetPrivate("_private")
         }
 
         [TestMethod]
