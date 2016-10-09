@@ -62,4 +62,4 @@ pt.GetStaticField("_privateStatic");
 ```
 These are totally useless works. What we want to do is just accessing private member simply regardless of it's real type or static. PrivateObjectExtensions automatically find the way to access the member. No need to concern about them all!
 
-This is powerful especially when you are mocking by inheriting, for instance using [Moq](https://github.com/moq). Moq mocks an object by inheriting the type. Once we create an instance as a mock object, it's hard to access private member of it. In case of replacing private field, the normal workaround is to make it ```protected virtual``` property to allow Moq to access it, and then use ```Mock<T>.Protected().Setup().Return()``` to customize the return value. However, you can directly access by using PrivateObjectExtensions.
+This is useful especially when you are mocking by inheriting, for instance using [Moq](https://github.com/moq). Moq mocks an object by inheriting the type. Once we create an instance as a mock object, we have to access private member as above. However, you can simply access by using PrivateObjectExtensions.
