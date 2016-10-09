@@ -158,13 +158,17 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 
         private static bool TryFindInstanceFieldOrPropertyOwnerType(Type objType, string name, Type memberType, Func<Type, bool> memberTypeMatching, out Type ownerType)
         {
-            ownerType = FindFieldOrPropertyOwnerType(objType, name, memberType, memberTypeMatching, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance);
+            var bindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance;
+            ownerType = FindFieldOrPropertyOwnerType(objType, name, memberType, memberTypeMatching, bindingFlags);
+
             return (ownerType != null);
         }
 
         private static bool TryFindStaticFieldOrPropertyOwnerType(Type objType, string name, Type memberType, Func<Type, bool> memberTypeMatching, out Type ownerType)
         {
-            ownerType = FindFieldOrPropertyOwnerType(objType, name, memberType, memberTypeMatching, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Static);
+            var bindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Static;
+            ownerType = FindFieldOrPropertyOwnerType(objType, name, memberType, memberTypeMatching, bindingFlags);
+
             return (ownerType != null);
         }
 
