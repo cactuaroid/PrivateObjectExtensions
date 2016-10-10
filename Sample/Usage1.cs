@@ -73,5 +73,15 @@ namespace Sample
             Assert.AreEqual(3, derived.GetPrivate<int[]>("_array").Length);
             Assert.AreEqual(3, derived.GetPrivate<dynamic>("_dynamic").Count);
         }
+
+        [TestMethod]
+        public void CanGetAndSetStaticMembersFromType()
+        {
+            // These overloads are just wrapping PrivateType.GetStaticFieldOrProperty() / SetStaticFieldOrProperty().
+            // These won't search base types, because you know the exact type for accessing.
+
+            typeof(Base).SetPrivate("_privateStatic", "changed2");
+            Assert.AreEqual("changed2", typeof(Base).GetPrivate("_privateStatic"));
+        }
     }
 }
