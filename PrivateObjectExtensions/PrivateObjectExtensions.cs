@@ -9,43 +9,8 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
     /// </summary>
     public static class PrivateObjectExtensions
     {
-        /// <summary>
-        /// Get from private (and any other) static field/property.
-        /// </summary>
-        /// <param name="type">The type to get</param>
-        /// <param name="name">The name of the static field/property to get</param>
-        /// <returns>The object got from the static field/property</returns>
-        /// <exception cref="ArgumentException">'name' is not found.</exception>
-        /// <exception cref="ArgumentNullException">Arguments contain null.</exception>
-        public static object GetPrivate(this Type type, string name)
-        {
-            if (type == null) { throw new ArgumentNullException("type"); }
-            if (name == null) { throw new ArgumentNullException("name"); }
-            if (string.IsNullOrWhiteSpace(name)) { throw new ArgumentException("name has to be not null or white space.", "name"); }
-
-            try
-            {
-                return new PrivateType(type).GetStaticFieldOrProperty(name);
-            }
-            catch (Exception ex)
-            {
-                throw new ArgumentException(name + " is not found", ex);
-            }
-        }
-
-        /// <summary>
-        /// Get from private (and any other) static field/property.
-        /// </summary>
-        /// <typeparam name="T">The type of the field/property to get</typeparam>
-        /// <param name="type">The type to get</param>
-        /// <param name="name">The name of the static field/property to get</param>
-        /// <returns>The object got from the static field/property</returns>
-        /// <exception cref="ArgumentException">'name' is not found.</exception>
-        /// <exception cref="ArgumentNullException">Arguments contain null.</exception>
-        public static T GetPrivate<T>(this Type type, string name)
-        {
-            return (T)GetPrivate(type, name);
-        }
+        private static readonly BindingFlags Static = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Static;
+        private static readonly BindingFlags Instance = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance;
 
         /// <summary>
         /// Get from private (and any other) field/property.
@@ -75,7 +40,6 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
         /// <returns>The object got from the field/property</returns>
         /// <exception cref="ArgumentException">'name' is not found.</exception>
         /// <exception cref="ArgumentNullException">Arguments contain null.</exception>
-        /// <exception cref="InvalidCastException">The object got from the field/property cannot be casted to 'T'.</exception>
         public static T GetPrivate<T>(this object obj, string name)
         {
             if (obj == null) { throw new ArgumentNullException("obj"); }
@@ -113,7 +77,6 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
         /// <exception cref="ArgumentException">'name' is not found.</exception>
         /// <exception cref="ArgumentException">The type of'obj' is not derived from 'objType'.</exception>
         /// <exception cref="ArgumentNullException">Arguments contain null.</exception>
-        /// <exception cref="InvalidCastException">The object got from the field/property cannot be casted to 'T'.</exception>
         public static T GetPrivate<T>(this object obj, string name, Type objType)
         {
             return (T)GetPrivate(obj, name, objType, typeof(T));
@@ -127,12 +90,14 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
             if (objType == null) { throw new ArgumentNullException("objType"); }
             if (!objType.IsAssignableFrom(obj.GetType())) { throw new ArgumentException(objType + " is invalid type for this object", "objType"); }
 
+            Func<Type, bool> memberTypeMatching = (actualType) => actualType == memberType;
             Type ownerType;
-            if (TryFindInstanceFieldOrPropertyOwnerType(objType, name, memberType, (actualType) => actualType == memberType, out ownerType))
+
+            if (TryFindFieldOrPropertyOwnerType(objType, name, memberType, memberTypeMatching, Instance, out ownerType))
             {
                 return new PrivateObject(obj, new PrivateType(ownerType)).GetFieldOrProperty(name);
             }
-            else if (TryFindStaticFieldOrPropertyOwnerType(objType, name, memberType, (actualType) => actualType == memberType, out ownerType))
+            else if (TryFindFieldOrPropertyOwnerType(objType, name, memberType, memberTypeMatching, Static, out ownerType))
             {
                 return new PrivateType(ownerType).GetStaticFieldOrProperty(name);
             }
@@ -141,27 +106,47 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
         }
 
         /// <summary>
-        /// Set to private (and any other) static field/property.
+        /// Get from private (and any other) static field/property.
         /// </summary>
-        /// <param name="type">The type to set</param>
-        /// <param name="name">The name of the field/property to set</param>
-        /// <param name="value">The value to set for 'name'</param>
+        /// <param name="type">The type to get</param>
+        /// <param name="name">The name of the static field/property to get</param>
+        /// <returns>The object got from the static field/property</returns>
         /// <exception cref="ArgumentException">'name' is not found.</exception>
         /// <exception cref="ArgumentNullException">Arguments contain null.</exception>
-        public static void SetPrivate<T>(this Type type, string name, T value)
+        public static object GetPrivate(this Type type, string name)
+        {
+            return GetPrivate(type, name, null);
+        }
+
+        /// <summary>
+        /// Get from private (and any other) static field/property.
+        /// </summary>
+        /// <typeparam name="T">The type of the field/property to get</typeparam>
+        /// <param name="type">The type to get</param>
+        /// <param name="name">The name of the static field/property to get</param>
+        /// <returns>The object got from the static field/property</returns>
+        /// <exception cref="ArgumentException">'name' is not found.</exception>
+        /// <exception cref="ArgumentNullException">Arguments contain null.</exception>
+        /// <exception cref="InvalidCastException">The object got from the field/property cannot be casted to 'T'.</exception>
+        public static T GetPrivate<T>(this Type type, string name)
+        {
+            return (T)GetPrivate(type, name, typeof(T));
+        }
+
+        private static object GetPrivate(this Type type, string name, Type memberType)
         {
             if (type == null) { throw new ArgumentNullException("type"); }
             if (name == null) { throw new ArgumentNullException("name"); }
             if (string.IsNullOrWhiteSpace(name)) { throw new ArgumentException("name has to be not null or white space.", "name"); }
 
-            try
+            Func<Type, bool> memberTypeMatching = (actualType) => actualType == memberType;
+
+            if (type.ContainsFieldOrProperty(name, memberType, memberTypeMatching, Static))
             {
-                new PrivateType(type).SetStaticFieldOrProperty(name, value);
+                return new PrivateType(type).GetStaticFieldOrProperty(name);
             }
-            catch (Exception ex)
-            {
-                throw new ArgumentException(typeof(T) + " " + name + " is not found", ex);
-            }
+
+            throw new ArgumentException(((memberType != null) ? memberType + " " : "") + name + " is not found");
         }
 
         /// <summary>
@@ -203,13 +188,15 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
             if (!objType.IsAssignableFrom(obj.GetType())) { throw new ArgumentException(objType + " is invalid type for this object", "objType"); }
 
             var memberType = typeof(T);
+            Func<Type, bool> memberTypeMatching = (actualType) => actualType.IsAssignableFrom(memberType);
             Type ownerType;
-            if (TryFindInstanceFieldOrPropertyOwnerType(objType, name, memberType, (actualType) => actualType.IsAssignableFrom(memberType), out ownerType))
+
+            if (TryFindFieldOrPropertyOwnerType(objType, name, memberType, memberTypeMatching, Instance, out ownerType))
             {
                 new PrivateObject(obj, new PrivateType(ownerType)).SetFieldOrProperty(name, value);
                 return;
             }
-            else if (TryFindStaticFieldOrPropertyOwnerType(objType, name, memberType, (actualType) => actualType.IsAssignableFrom(memberType), out ownerType))
+            else if (TryFindFieldOrPropertyOwnerType(objType, name, memberType, memberTypeMatching, Static, out ownerType))
             {
                 new PrivateType(ownerType).SetStaticFieldOrProperty(name, value);
                 return;
@@ -218,18 +205,35 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
             throw new ArgumentException(memberType + " " + name + " is not found");
         }
 
-        private static bool TryFindInstanceFieldOrPropertyOwnerType(Type objType, string name, Type memberType, Func<Type, bool> memberTypeMatching, out Type ownerType)
+        /// <summary>
+        /// Set to private (and any other) static field/property.
+        /// </summary>
+        /// <param name="type">The type to set</param>
+        /// <param name="name">The name of the field/property to set</param>
+        /// <param name="value">The value to set for 'name'</param>
+        /// <exception cref="ArgumentException">'name' is not found.</exception>
+        /// <exception cref="ArgumentNullException">Arguments contain null.</exception>
+        public static void SetPrivate<T>(this Type type, string name, T value)
         {
-            var bindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance;
-            ownerType = FindFieldOrPropertyOwnerType(objType, name, memberType, memberTypeMatching, bindingFlags);
+            if (type == null) { throw new ArgumentNullException("type"); }
+            if (name == null) { throw new ArgumentNullException("name"); }
+            if (string.IsNullOrWhiteSpace(name)) { throw new ArgumentException("name has to be not null or white space.", "name"); }
 
-            return (ownerType != null);
+            var memberType = typeof(T);
+            Func<Type, bool> memberTypeMatching = (actualType) => actualType.IsAssignableFrom(memberType);
+
+            if (type.ContainsFieldOrProperty(name, memberType, memberTypeMatching, Static))
+            {
+                new PrivateType(type).SetStaticFieldOrProperty(name, value);
+                return;
+            }
+
+            throw new ArgumentException(memberType + " " + name + " is not found");
         }
 
-        private static bool TryFindStaticFieldOrPropertyOwnerType(Type objType, string name, Type memberType, Func<Type, bool> memberTypeMatching, out Type ownerType)
+        private static bool TryFindFieldOrPropertyOwnerType(Type objType, string name, Type memberType, Func<Type, bool> memberTypeMatching, BindingFlags bindingFlag, out Type ownerType)
         {
-            var bindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Static;
-            ownerType = FindFieldOrPropertyOwnerType(objType, name, memberType, memberTypeMatching, bindingFlags);
+            ownerType = FindFieldOrPropertyOwnerType(objType, name, memberType, memberTypeMatching, bindingFlag);
 
             return (ownerType != null);
         }
@@ -238,6 +242,16 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
         {
             if (objectType == null) { return null; }
 
+            if (objectType.ContainsFieldOrProperty(name, memberType, memberTypeMatching, bindingFlags))
+            {
+                return objectType;
+            }
+
+            return FindFieldOrPropertyOwnerType(objectType.BaseType, name, memberType, memberTypeMatching, bindingFlags);
+        }
+
+        private static bool ContainsFieldOrProperty(this Type objectType, string name, Type memberType, Func<Type, bool> memberTypeMatching, BindingFlags bindingFlags)
+        {
             var fields = objectType
                 .GetFields(bindingFlags)
                 .Select((x) => new { Type = x.FieldType, Member = x as MemberInfo });
@@ -248,14 +262,9 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 
             var members = fields.Concat(properties);
 
-            if (members.Any((actual) =>
+            return members.Any((actual) =>
                 (memberType == null || memberTypeMatching.Invoke(actual.Type))
-                && actual.Member.Name == name))
-            {
-                return objectType;
-            }
-
-            return FindFieldOrPropertyOwnerType(objectType.BaseType, name, memberType, memberTypeMatching, bindingFlags);
+                && actual.Member.Name == name);
         }
     }
 }
