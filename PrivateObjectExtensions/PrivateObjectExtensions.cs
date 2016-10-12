@@ -5,7 +5,7 @@ using System.Reflection;
 namespace Microsoft.VisualStudio.TestTools.UnitTesting
 {
     /// <summary>
-    /// This class provides extension methods for PrivateObject.
+    /// Extension methods for PrivateObject
     /// </summary>
     public static class PrivateObjectExtensions
     {
@@ -127,7 +127,6 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
         /// <returns>The object got from the static field/property</returns>
         /// <exception cref="ArgumentException">'name' is not found.</exception>
         /// <exception cref="ArgumentNullException">Arguments contain null.</exception>
-        /// <exception cref="InvalidCastException">The object got from the field/property cannot be casted to 'T'.</exception>
         public static T GetPrivate<T>(this Type type, string name)
         {
             return (T)GetPrivate(type, name, typeof(T));
