@@ -77,8 +77,7 @@ namespace Sample
         [TestMethod]
         public void CanGetAndSetStaticMembersFromType()
         {
-            // These overloads are just wrapping PrivateType.GetStaticFieldOrProperty() / SetStaticFieldOrProperty().
-            // These won't search base types, because you know the exact type for accessing.
+            // These overloads won't search base types, because you know the exact type for accessing.
 
             typeof(Base).SetPrivate("_privateStatic", "changed2");
             Assert.AreEqual("changed2", typeof(Base).GetPrivate("_privateStatic"));
