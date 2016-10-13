@@ -23,7 +23,9 @@ public void GetMembers()
 {
     var derived = new Derived();
     var value1 = derived.GetPrivate("_private");
-    var value2 = derived.GetPrivate("_privateStatic");
+    var value2 = derived.GetPrivate<string>("_private");
+    var value3 = derived.GetPrivate("_privateStatic");
+    var value4 = typeof(Base).GetPrivate("_privateStatic");
     // ...
 }
 
@@ -31,8 +33,9 @@ public void GetMembers()
 public void SetMembers()
 {
     var derived = new Derived();
-    var value1 = derived.SetPrivate("_private", "changed");
-    var value2 = derived.SetPrivate("_privateStatic", "changed");
+    derived.SetPrivate("_private", "changed");
+    derived.SetPrivate("_privateStatic", "changed");
+    typeof(Base).SetPrivate("_privateStatic", "changed");
     // ...
 }
 ```
