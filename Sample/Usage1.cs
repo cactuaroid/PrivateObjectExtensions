@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -75,12 +76,25 @@ namespace Sample
         }
 
         [TestMethod]
-        public void CanGetAndSetStaticMembersFromType()
+        public void CanGetAndSetStaticMembersByType()
         {
-            // These overloads won't search base types, because you know the exact type for accessing.
-
             typeof(Base).SetPrivate("_privateStatic", "changed2");
             Assert.AreEqual("changed2", typeof(Base).GetPrivate("_privateStatic"));
+        }
+
+        [TestMethod]
+        public void BaseTypeIsNotSearchedForStaticMembersByType()
+        {
+            try
+            {
+                typeof(Derived).SetPrivate("_privateStatic", "changed3");
+            }
+            catch(ArgumentException)
+            {
+                return;
+            }
+
+            Assert.Fail();
         }
     }
 }
