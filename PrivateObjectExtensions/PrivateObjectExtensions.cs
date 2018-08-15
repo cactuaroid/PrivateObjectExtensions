@@ -1,4 +1,12 @@
-﻿using System;
+﻿/// <copyright file="PrivateObjectExtensions.cs">
+/// Copyright (c) 2018 cactuaroid All Rights Reserved
+/// </copyright>
+/// <summary>
+/// Released under the MIT license
+/// https://github.com/cactuaroid/PrivateObjectExtensions
+/// </summary>
+
+using System;
 using System.Linq;
 using System.Reflection;
 
