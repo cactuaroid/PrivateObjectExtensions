@@ -5,9 +5,9 @@ VisualStudioVersion = 15.0.28307.106
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrivateObjectExtensions", "PrivateObjectExtensions\PrivateObjectExtensions.csproj", "{8B0DF14D-CDB7-4B13-82F6-8CA2A2DC4A86}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.MSTestV1", "Sample\Sample.MSTestV1.csproj", "{1D8FF8F0-3910-47DE-BDEE-FBBF3048DBC8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.MSTestV1", "Sample.MSTestV1\Sample.MSTestV1.csproj", "{1D8FF8F0-3910-47DE-BDEE-FBBF3048DBC8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.MSTestV2", "UnitTestProject1\Sample.MSTestV2.csproj", "{840335A6-2C10-4301-9448-83883D397008}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.MSTestV2", "Sample.MSTestV2\Sample.MSTestV2.csproj", "{840335A6-2C10-4301-9448-83883D397008}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
