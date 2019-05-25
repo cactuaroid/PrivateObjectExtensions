@@ -1,8 +1,16 @@
 PrivateObjectExtensions
 ---
-PrivateObjectExtensions is one wrapper class providing extension methods for [PrivateObject](https://msdn.microsoft.com/en-us/library/microsoft.visualstudio.testtools.unittesting.privateobject.aspx). PrivateObjectExtensions allows you to
-- get/set private (and any other) fields/properties by simple extension methods
-- even if the member is declared in base type
+PrivateObjectExtensions provides extension methods of [PrivateObject](https://docs.microsoft.com/en-us/dotnet/api/microsoft.visualstudio.testtools.unittesting.privateobject) and [PrivateType](https://docs.microsoft.com/en-us/dotnet/api/microsoft.visualstudio.testtools.unittesting.privatetype) for unit test projects. This allows you to
+- get/set private (and any other) fields/properties by simple extension methods,
+- even if the member is declared in base type.
+
+Requirements
+---
+The unit test project has to refer either of:
+- (MSTest V1) Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll or
+- (MSTest V2) MSTest.TestFramework.
+
+Supported platform: .NET Framework 4.5+
 
 Sample
 ---
@@ -43,10 +51,6 @@ public void SetMembers()
 - ```SetPrivate()``` is a wrapper of ```PrivateObject.SetFieldOrProperty()``` and ```PrivateType.SetStaticFieldOrProperty()```.
 
 See more samples in Sample project.
-
-How to Use
----
-Simply refer PrivateObjectExtensions project from your unit test project or copy PrivateObjectExtensions.cs to your unit test project.
 
 Why PrivateObjectExtensions?
 ---

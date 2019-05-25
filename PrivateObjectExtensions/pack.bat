@@ -1,0 +1,1 @@
+NuGet.exe pack PrivateObjectExtensions.csproj -Prop Configuration=Release
