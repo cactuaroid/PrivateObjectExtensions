@@ -15,13 +15,9 @@
       - (MSTest V1) Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll or
       - (MSTest V2) MSTest.TestFramework.
 
-      Supported platform: .NET Framework 4.5+
+      Supported platform: .NET Framework 4.0+
     </description>
     <copyright>$copyright$</copyright>
     <tags>PrivateObject PrivateType MSTest MSTestV2 Unittest</tags>
-    <frameworkAssemblies>
-      <frameworkAssembly assemblyName="System" />
-      <frameworkAssembly assemblyName="Microsoft.CSharp" />
-    </frameworkAssemblies>
   </metadata>
 </package>

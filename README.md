@@ -12,7 +12,7 @@ The unit test project has to refer either of:
 - (MSTest V1) Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll or
 - (MSTest V2) MSTest.TestFramework.
 
-Supported platform: .NET Framework 4.5+
+Supported platform: .NET Framework 4.0+
 
 Sample
 ---
