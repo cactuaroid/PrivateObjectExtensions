@@ -32,10 +32,14 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
                 .Select(x => x.GetType(name))
                 .FirstOrDefault(x => x != null);
 
-            if (type == null) { throw new InvalidOperationException($"{name} is not found."); }
-
-            return type;
+            return type ?? throw new InvalidOperationException($"{name} is not found.");
         }
+
+        private static dynamic PrivateObject(params object[] args)
+            => Activator.CreateInstance(PrivateObjectType, args);
+
+        private static dynamic PrivateType(params object[] args)
+            => Activator.CreateInstance(PrivateTypeType, args);
 
         /// <summary>
         /// Get from private (and any other) field/property.
@@ -120,13 +124,11 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 
             if (TryFindFieldOrPropertyOwnerType(objType, name, memberType, memberTypeMatching, Instance, out ownerType))
             {
-                dynamic privateObject = Activator.CreateInstance(PrivateObjectType, obj, Activator.CreateInstance(PrivateTypeType, ownerType));
-                return privateObject.GetFieldOrProperty(name);
+                return PrivateObject(obj, PrivateType(ownerType)).GetFieldOrProperty(name);
             }
             else if (TryFindFieldOrPropertyOwnerType(objType, name, memberType, memberTypeMatching, Static, out ownerType))
             {
-                dynamic privateType = Activator.CreateInstance(PrivateTypeType, ownerType);
-                return privateType.GetStaticFieldOrProperty(name);
+                return PrivateType(ownerType).GetStaticFieldOrProperty(name);
             }
 
             throw new ArgumentException(((memberType != null) ? memberType + " " : "") + name + " is not found");
@@ -169,8 +171,7 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 
             if (type.ContainsFieldOrProperty(name, memberType, memberTypeMatching, Static))
             {
-                dynamic privateType = Activator.CreateInstance(PrivateTypeType, type);
-                return privateType.GetStaticFieldOrProperty(name);
+                return PrivateType(type).GetStaticFieldOrProperty(name);
             }
 
             throw new ArgumentException(((memberType != null) ? memberType + " " : "") + name + " is not found");
@@ -220,14 +221,12 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 
             if (TryFindFieldOrPropertyOwnerType(objType, name, memberType, memberTypeMatching, Instance, out ownerType))
             {
-                dynamic privateObject = Activator.CreateInstance(PrivateObjectType, obj, Activator.CreateInstance(PrivateTypeType, ownerType));
-                privateObject.SetFieldOrProperty(name, value);
+                PrivateObject(obj, PrivateType(ownerType)).SetFieldOrProperty(name, value);
                 return;
             }
             else if (TryFindFieldOrPropertyOwnerType(objType, name, memberType, memberTypeMatching, Static, out ownerType))
             {
-                dynamic privateType = Activator.CreateInstance(PrivateTypeType, ownerType);
-                privateType.SetStaticFieldOrProperty(name, value);
+                PrivateType(ownerType).SetStaticFieldOrProperty(name, value);
                 return;
             }
 
@@ -253,8 +252,7 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 
             if (type.ContainsFieldOrProperty(name, memberType, memberTypeMatching, Static))
             {
-                dynamic privateType = Activator.CreateInstance(PrivateTypeType, type);
-                privateType.SetStaticFieldOrProperty(name, value);
+                PrivateType(type).SetStaticFieldOrProperty(name, value);
                 return;
             }
 
