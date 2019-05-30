@@ -1,0 +1,1 @@
+NuGet.exe pack PrivateObjectExtensions.nuspec
