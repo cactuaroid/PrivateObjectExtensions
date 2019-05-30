@@ -36,8 +36,16 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="testfx\Helper.cs" />
+    <Compile Include="testfx\PrivateObject.cs" />
     <Compile Include="PrivateObjectExtensions.cs" />
+    <Compile Include="testfx\PrivateType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="testfx\LICENSE.txt" />
+    <None Include="testfx\readme.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

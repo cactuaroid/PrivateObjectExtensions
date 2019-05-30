@@ -8,11 +8,11 @@ PrivateObjectExtensions provides extension methods of [PrivateObject](https://do
 
 Requirements
 ---
-The unit test project has to refer either of:
-- (MSTest V1) Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll or
-- (MSTest V2) MSTest.TestFramework.
+No dependencies. You can use this library for any projects, but I recommend to use only in unit test projects.
 
-Supported platform: .NET Framework 4.0+
+Supported platform:
+- .NET Framework 4.0+
+- .NET Core 2.0+
 
 Sample
 ---
@@ -52,7 +52,7 @@ public void SetMembers()
 - ```GetPrivate()``` is a wrapper of ```PrivateObject.GetFieldOrProperty()``` and ```PrivateType.GetStaticFieldOrProperty()```.
 - ```SetPrivate()``` is a wrapper of ```PrivateObject.SetFieldOrProperty()``` and ```PrivateType.SetStaticFieldOrProperty()```.
 
-See more samples in Sample project.
+See more samples in Test projects.
 
 Why PrivateObjectExtensions?
 ---

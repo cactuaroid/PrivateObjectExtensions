@@ -50,10 +50,10 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Sample.MSTestV1\Usage1.cs">
+    <Compile Include="..\Test.Desktop.MSTestV1\Usage1.cs">
       <Link>Usage1.cs</Link>
     </Compile>
-    <Compile Include="..\Sample.MSTestV1\Usage2.cs">
+    <Compile Include="..\Test.Desktop.MSTestV1\Usage2.cs">
       <Link>Usage2.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -1,16 +1,16 @@
 ﻿/// <copyright file="PrivateObjectExtensions.cs">
-/// Copyright (c) 2018 cactuaroid All Rights Reserved
+/// Copyright (c) 2019 cactuaroid All Rights Reserved
 /// </copyright>
 /// <summary>
 /// Released under the MIT license
 /// https://github.com/cactuaroid/PrivateObjectExtensions
 /// </summary>
 
-using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 using System.Reflection;
 
-namespace Microsoft.VisualStudio.TestTools.UnitTesting
+namespace System
 {
     /// <summary>
     /// Extension methods for PrivateObject
@@ -19,27 +19,6 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
     {
         private static readonly BindingFlags Static = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Static;
         private static readonly BindingFlags Instance = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance;
-
-        // PrivateObject and PrivateType are searched on runtime because they are possibly located in:
-        // - (MSTest V1) Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll or
-        // - (MSTest V2) MSTest.TestFramework nuget package.
-        private static readonly Type PrivateObjectType = GetTypeByName("Microsoft.VisualStudio.TestTools.UnitTesting.PrivateObject");
-        private static readonly Type PrivateTypeType = GetTypeByName("Microsoft.VisualStudio.TestTools.UnitTesting.PrivateType");
-
-        public static Type GetTypeByName(string name)
-        {
-            var type = AppDomain.CurrentDomain.GetAssemblies()
-                .Select(x => x.GetType(name))
-                .FirstOrDefault(x => x != null);
-
-            return type ?? throw new InvalidOperationException($"{name} is not found.");
-        }
-
-        private static dynamic PrivateObject(params object[] args)
-            => Activator.CreateInstance(PrivateObjectType, args);
-
-        private static dynamic PrivateType(params object[] args)
-            => Activator.CreateInstance(PrivateTypeType, args);
 
         /// <summary>
         /// Get from private (and any other) field/property.
@@ -124,11 +103,11 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 
             if (TryFindFieldOrPropertyOwnerType(objType, name, memberType, memberTypeMatching, Instance, out ownerType))
             {
-                return PrivateObject(obj, PrivateType(ownerType)).GetFieldOrProperty(name);
+                return new PrivateObject(obj, new PrivateType(ownerType)).GetFieldOrProperty(name);
             }
             else if (TryFindFieldOrPropertyOwnerType(objType, name, memberType, memberTypeMatching, Static, out ownerType))
             {
-                return PrivateType(ownerType).GetStaticFieldOrProperty(name);
+                return new PrivateType(ownerType).GetStaticFieldOrProperty(name);
             }
 
             throw new ArgumentException(((memberType != null) ? memberType + " " : "") + name + " is not found");
@@ -171,7 +150,7 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 
             if (type.ContainsFieldOrProperty(name, memberType, memberTypeMatching, Static))
             {
-                return PrivateType(type).GetStaticFieldOrProperty(name);
+                return new PrivateType(type).GetStaticFieldOrProperty(name);
             }
 
             throw new ArgumentException(((memberType != null) ? memberType + " " : "") + name + " is not found");
@@ -221,12 +200,12 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 
             if (TryFindFieldOrPropertyOwnerType(objType, name, memberType, memberTypeMatching, Instance, out ownerType))
             {
-                PrivateObject(obj, PrivateType(ownerType)).SetFieldOrProperty(name, value);
+                new PrivateObject(obj, new PrivateType(ownerType)).SetFieldOrProperty(name, value);
                 return;
             }
             else if (TryFindFieldOrPropertyOwnerType(objType, name, memberType, memberTypeMatching, Static, out ownerType))
             {
-                PrivateType(ownerType).SetStaticFieldOrProperty(name, value);
+                new PrivateType(ownerType).SetStaticFieldOrProperty(name, value);
                 return;
             }
 
@@ -252,7 +231,7 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 
             if (type.ContainsFieldOrProperty(name, memberType, memberTypeMatching, Static))
             {
-                PrivateType(type).SetStaticFieldOrProperty(name, value);
+                new PrivateType(type).SetStaticFieldOrProperty(name, value);
                 return;
             }
 
