@@ -50,20 +50,12 @@ namespace Sample
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
         public void GettingValueTypeNotAllowsBaseType()
         {
             var derived = new Derived();
 
-            try
-            {
-                derived.GetPrivate<object>("_private");
-            }
-            catch(ArgumentException)
-            {
-                return;
-            }
-
-            Assert.Fail();
+            derived.GetPrivate<object>("_private");
         }
 
         [TestMethod]

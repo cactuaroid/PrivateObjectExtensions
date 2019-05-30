@@ -76,6 +76,13 @@ namespace Sample
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void SpecifyingWrongNameThrowsException()
+        {
+            new Derived().GetPrivate("_");
+        }
+
+        [TestMethod]
         public void CanGetAndSetStaticMembersByType()
         {
             typeof(Base).SetPrivate("_privateStatic", "changed2");
@@ -83,18 +90,10 @@ namespace Sample
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
         public void BaseTypeIsNotSearchedForStaticMembersByType()
         {
-            try
-            {
-                typeof(Derived).SetPrivate("_privateStatic", "changed3");
-            }
-            catch(ArgumentException)
-            {
-                return;
-            }
-
-            Assert.Fail();
+            typeof(Derived).SetPrivate("_privateStatic", "changed3");
         }
     }
 }
