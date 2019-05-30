@@ -52,6 +52,7 @@ public void SetMembers()
 - ```GetPrivate()``` is a wrapper of ```PrivateObject.GetFieldOrProperty()``` and ```PrivateType.GetStaticFieldOrProperty()```.
 - ```SetPrivate()``` is a wrapper of ```PrivateObject.SetFieldOrProperty()``` and ```PrivateType.SetStaticFieldOrProperty()```.
 
+These extension methods are in namespace of `System` and extends `object` type.
 See more samples in Test projects.
 
 Why PrivateObjectExtensions?
