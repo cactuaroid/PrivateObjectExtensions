@@ -98,10 +98,9 @@ namespace System
             if (objType == null) { throw new ArgumentNullException("objType"); }
             if (!objType.IsAssignableFrom(obj.GetType())) { throw new ArgumentException(objType + " is invalid type for this object", "objType"); }
 
-            Func<Type, bool> memberTypeMatching = (actualType) => actualType == memberType;
-            Type ownerType;
+            bool memberTypeMatching(Type actualType) => actualType == memberType;
 
-            if (TryFindFieldOrPropertyOwnerType(objType, name, memberType, memberTypeMatching, Instance, out ownerType))
+            if (TryFindFieldOrPropertyOwnerType(objType, name, memberType, memberTypeMatching, Instance, out var ownerType))
             {
                 return new PrivateObject(obj, new PrivateType(ownerType)).GetFieldOrProperty(name);
             }
@@ -146,7 +145,7 @@ namespace System
             if (name == null) { throw new ArgumentNullException("name"); }
             if (string.IsNullOrWhiteSpace(name)) { throw new ArgumentException("name has to be not null or white space.", "name"); }
 
-            Func<Type, bool> memberTypeMatching = (actualType) => actualType == memberType;
+            bool memberTypeMatching(Type actualType) => actualType == memberType;
 
             if (type.ContainsFieldOrProperty(name, memberType, memberTypeMatching, Static))
             {
@@ -195,10 +194,9 @@ namespace System
             if (!objType.IsAssignableFrom(obj.GetType())) { throw new ArgumentException(objType + " is invalid type for this object", "objType"); }
 
             var memberType = typeof(T);
-            Func<Type, bool> memberTypeMatching = (actualType) => actualType.IsAssignableFrom(memberType);
-            Type ownerType;
+            bool memberTypeMatching(Type actualType) => actualType.IsAssignableFrom(memberType);
 
-            if (TryFindFieldOrPropertyOwnerType(objType, name, memberType, memberTypeMatching, Instance, out ownerType))
+            if (TryFindFieldOrPropertyOwnerType(objType, name, memberType, memberTypeMatching, Instance, out var ownerType))
             {
                 new PrivateObject(obj, new PrivateType(ownerType)).SetFieldOrProperty(name, value);
                 return;
@@ -227,7 +225,7 @@ namespace System
             if (string.IsNullOrWhiteSpace(name)) { throw new ArgumentException("name has to be not null or white space.", "name"); }
 
             var memberType = typeof(T);
-            Func<Type, bool> memberTypeMatching = (actualType) => actualType.IsAssignableFrom(memberType);
+            bool memberTypeMatching(Type actualType) => actualType.IsAssignableFrom(memberType);
 
             if (type.ContainsFieldOrProperty(name, memberType, memberTypeMatching, Static))
             {
