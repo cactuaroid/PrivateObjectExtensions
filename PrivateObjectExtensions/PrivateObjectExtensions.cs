@@ -193,21 +193,39 @@ namespace System
             if (objType == null) { throw new ArgumentNullException("objType"); }
             if (!objType.IsAssignableFrom(obj.GetType())) { throw new ArgumentException(objType + " is invalid type for this object", "objType"); }
 
+            if (TrySetPrivate(obj, name, value, objType)) { return; }
+
+            // retry for the case of getter only property
+            if (TrySetPrivate(obj, GetBackingFieldName(name), value, objType)) { return; }
+
+            throw new ArgumentException(typeof(T) + " " + name + " is not found");
+        }
+
+        private static bool TrySetPrivate<T>(object obj, string name, T value, Type objType)
+        {
             var memberType = typeof(T);
             bool memberTypeMatching(Type actualType) => actualType.IsAssignableFrom(memberType);
 
-            if (TryFindFieldOrPropertyOwnerType(objType, name, memberType, memberTypeMatching, Instance, out var ownerType))
+            try
             {
-                new PrivateObject(obj, new PrivateType(ownerType)).SetFieldOrProperty(name, value);
-                return;
+                if (TryFindFieldOrPropertyOwnerType(objType, name, memberType, memberTypeMatching, Instance, out var ownerType))
+                {
+                    new PrivateObject(obj, new PrivateType(ownerType)).SetFieldOrProperty(name, value);
+                    return true;
+                }
+                else if (TryFindFieldOrPropertyOwnerType(objType, name, memberType, memberTypeMatching, Static, out ownerType))
+                {
+                    new PrivateType(ownerType).SetStaticFieldOrProperty(name, value);
+                    return true;
+                }
             }
-            else if (TryFindFieldOrPropertyOwnerType(objType, name, memberType, memberTypeMatching, Static, out ownerType))
+            catch(MissingMethodException)
             {
-                new PrivateType(ownerType).SetStaticFieldOrProperty(name, value);
-                return;
+                // When getter only property name is given, the property is found but fails to set.
+                return false;
             }
 
-            throw new ArgumentException(memberType + " " + name + " is not found");
+            return false;
         }
 
         /// <summary>
@@ -224,17 +242,38 @@ namespace System
             if (name == null) { throw new ArgumentNullException("name"); }
             if (string.IsNullOrWhiteSpace(name)) { throw new ArgumentException("name has to be not null or white space.", "name"); }
 
+            if (TrySetPrivate(type, name, value)) { return; }
+
+            // retry for the case of getter only property
+            if (TrySetPrivate(type, GetBackingFieldName(name), value)) { return; }
+
+            throw new ArgumentException(typeof(T) + " " + name + " is not found");
+        }
+
+        private static bool TrySetPrivate<T>(this Type type, string name, T value)
+        {
             var memberType = typeof(T);
             bool memberTypeMatching(Type actualType) => actualType.IsAssignableFrom(memberType);
 
-            if (type.ContainsFieldOrProperty(name, memberType, memberTypeMatching, Static))
+            try
             {
-                new PrivateType(type).SetStaticFieldOrProperty(name, value);
-                return;
+                if (type.ContainsFieldOrProperty(name, memberType, memberTypeMatching, Static))
+                {
+                    new PrivateType(type).SetStaticFieldOrProperty(name, value);
+                    return true;
+                }
+            }
+            catch (MissingMethodException)
+            {
+                // When getter only property name is given, the property is found but fails to set.
+                return false;
             }
 
-            throw new ArgumentException(memberType + " " + name + " is not found");
+            return false;
         }
+
+        private static string GetBackingFieldName(string propertyName)
+            => $"<{propertyName}>k__BackingField"; // generated backing field name
 
         private static bool TryFindFieldOrPropertyOwnerType(Type objType, string name, Type memberType, Func<Type, bool> memberTypeMatching, BindingFlags bindingFlag, out Type ownerType)
         {

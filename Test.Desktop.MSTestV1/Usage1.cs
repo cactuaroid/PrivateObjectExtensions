@@ -11,32 +11,27 @@ namespace Sample
         private class Base
         {
             // accessibility
-            private string _private = "private";
-            protected string Protected { get; private set; }
-            internal string Internal { get; private set; }
-            protected internal string ProtectedInternal { get; private set; }
-            public string Public { get; private set; }
+            private string _private = "original";
+            private readonly string _privateReadOnly = "original";
+            private string Private { get; set; } = "original";
+            private string GetterOnly { get; } = "original";
+            protected string Protected { get; private set; } = "original";
+            internal string Internal { get; private set; } = "original";
+            protected internal string ProtectedInternal { get; private set; } = "original";
+            public string Public { get; private set; } = "original";
 
             // static
-            private static string _privateStatic = "private static";
+            private static string _privateStatic = "original";
+            private static string GetterOnlyStatic { get; } = "original";
 
             // virtual
-            protected virtual string ProtectedVirtual { get; private set; }
+            protected virtual string ProtectedVirtual { get; private set; } = "original";
 
             // type
             private int _struct = 0;
             private IEnumerable<int> _interface = new int[] { };
             private int[] _array = new int[] { };
-            private dynamic _dynamic = "dynamic member";
-
-            public Base()
-            {
-                Protected = "protected";
-                Internal = "internal";
-                ProtectedInternal = "protected internal";
-                Public = "public";
-                ProtectedVirtual = "protected virtual";
-            }
+            private dynamic _dynamic = "original";
         }
 
         private class Derived : Base
@@ -49,11 +44,17 @@ namespace Sample
             var derived = new Derived();
 
             derived.SetPrivate("_private", "changed");
+            derived.SetPrivate("_privateReadOnly", "changed");
+            derived.SetPrivate("Private", "changed");
+            derived.SetPrivate("GetterOnly", "changed");
             derived.SetPrivate("Protected", "changed");
             derived.SetPrivate("Internal", "changed");
             derived.SetPrivate("ProtectedInternal", "changed");
             derived.SetPrivate("Public", "changed");
             Assert.AreEqual("changed", derived.GetPrivate("_private"));
+            Assert.AreEqual("changed", derived.GetPrivate("_privateReadOnly"));
+            Assert.AreEqual("changed", derived.GetPrivate("Private"));
+            Assert.AreEqual("changed", derived.GetPrivate("GetterOnly"));
             Assert.AreEqual("changed", derived.GetPrivate("Protected"));
             Assert.AreEqual("changed", derived.GetPrivate("Internal"));
             Assert.AreEqual("changed", derived.GetPrivate("ProtectedInternal"));
@@ -86,7 +87,9 @@ namespace Sample
         public void CanGetAndSetStaticMembersByType()
         {
             typeof(Base).SetPrivate("_privateStatic", "changed2");
+            typeof(Base).SetPrivate("GetterOnlyStatic", "changed2");
             Assert.AreEqual("changed2", typeof(Base).GetPrivate("_privateStatic"));
+            Assert.AreEqual("changed2", typeof(Base).GetPrivate("GetterOnlyStatic"));
         }
 
         [TestMethod]
