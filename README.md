@@ -4,7 +4,8 @@ PrivateObjectExtensions
 
 PrivateObjectExtensions provides extension methods of [PrivateObject](https://docs.microsoft.com/en-us/dotnet/api/microsoft.visualstudio.testtools.unittesting.privateobject) and [PrivateType](https://docs.microsoft.com/en-us/dotnet/api/microsoft.visualstudio.testtools.unittesting.privatetype) for unit test projects. This allows you to
 - get/set private (and any other) fields/properties by simple extension methods,
-- even if the member is declared in base type.
+- even if the member is declared in base type, or
+- even if the property is getter only.
 
 Requirements
 ---

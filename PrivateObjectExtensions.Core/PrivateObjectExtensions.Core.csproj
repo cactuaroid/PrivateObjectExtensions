@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>PrivateObjectExtensions</RootNamespace>
-    <Version>1.3.0</Version>
+    <Version>1.4.0</Version>
     <Authors>cactuaroid</Authors>
     <PackageId>PrivateObjectExtensions</PackageId>
     <Product>PrivateObjectExtensions</Product>
