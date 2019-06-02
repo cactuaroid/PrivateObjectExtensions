@@ -52,18 +52,8 @@ namespace Sample
         [Test]
         public void GettingValueTypeNotAllowsBaseType()
         {
-            var derived = new Derived();
-
-            try
-            {
-                derived.GetPrivate<object>("_private");
-            }
-            catch(ArgumentException)
-            {
-                return;
-            }
-
-            Assert.Fail();
+            Assert.Throws<ArgumentException>(
+                () => new Derived().GetPrivate<object>("_private"));
         }
 
         [Test]

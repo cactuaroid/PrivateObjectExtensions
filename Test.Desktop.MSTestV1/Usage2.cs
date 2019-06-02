@@ -53,9 +53,7 @@ namespace Sample
         [ExpectedException(typeof(ArgumentException))]
         public void GettingValueTypeNotAllowsBaseType()
         {
-            var derived = new Derived();
-
-            derived.GetPrivate<object>("_private");
+            new Derived().GetPrivate<object>("_private");
         }
 
         [TestMethod]
