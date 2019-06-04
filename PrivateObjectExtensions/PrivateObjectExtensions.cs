@@ -23,10 +23,10 @@ namespace System
         /// <summary>
         /// Get from private (and any other) field/property.
         /// If the real type of specified object doesn't contain the specified field/property,
-        /// it will be automatically search from base type.
+        /// base types are searched automatically.
         /// </summary>
-        /// <param name="obj">The object to get</param>
-        /// <param name="name">The name of the field/property to get</param>
+        /// <param name="obj">The object to get from</param>
+        /// <param name="name">The name of the field/property</param>
         /// <returns>The object got from the field/property</returns>
         /// <exception cref="ArgumentException">'name' is not found.</exception>
         /// <exception cref="ArgumentNullException">Arguments contain null.</exception>
@@ -40,11 +40,11 @@ namespace System
         /// <summary>
         /// Get from private (and any other) field/property.
         /// If the real type of specified object doesn't contain the specified field/property,
-        /// it will be automatically search from base type.
+        /// base types are searched automatically.
         /// </summary>
-        /// <typeparam name="T">The type of the field/property to get</typeparam>
-        /// <param name="obj">The object to get</param>
-        /// <param name="name">The name of the field/property to get</param>
+        /// <typeparam name="T">The type of the field/property</typeparam>
+        /// <param name="obj">The object to get from</param>
+        /// <param name="name">The name of the field/property</param>
         /// <returns>The object got from the field/property</returns>
         /// <exception cref="ArgumentException">'name' is not found.</exception>
         /// <exception cref="ArgumentNullException">Arguments contain null.</exception>
@@ -58,14 +58,14 @@ namespace System
         /// <summary>
         /// Get from private (and any other) field/property with assuming the specified object as specified type.
         /// If the specified type doesn't contain the specified field/property,
-        /// it will be automatically search from base type.
+        /// base types are searched automatically.
         /// </summary>
-        /// <param name="obj">The object to get</param>
-        /// <param name="name">The name of the field/property to get</param>
+        /// <param name="obj">The object to get from</param>
+        /// <param name="name">The name of the field/property</param>
         /// <param name="objType">The type of 'obj' for seaching member starting from. Real type of 'obj' is ignored.</param>
         /// <returns>The object got from the field/property</returns>
         /// <exception cref="ArgumentException">'name' is not found.</exception>
-        /// <exception cref="ArgumentException">The type of'obj' is not derived from 'objType'.</exception>
+        /// <exception cref="ArgumentException">'objType' is not assignable from 'obj'.</exception>
         /// <exception cref="ArgumentNullException">Arguments contain null.</exception>
         public static object GetPrivate(this object obj, string name, Type objType)
         {
@@ -75,15 +75,15 @@ namespace System
         /// <summary>
         /// Get from private (and any other) field/property with assuming the specified object as specified type.
         /// If the specified type doesn't contain the specified field/property,
-        /// it will be automatically search from base type.
+        /// base types are searched automatically.
         /// </summary>
-        /// <typeparam name="T">The type of the field/property to get</typeparam>
-        /// <param name="obj">The object to get</param>
-        /// <param name="name">The name of the field/property to get</param>
+        /// <typeparam name="T">The type of the field/property</typeparam>
+        /// <param name="obj">The object to get from</param>
+        /// <param name="name">The name of the field/property</param>
         /// <param name="objType">The type of 'obj' for seaching member starting from. Real type of 'obj' is ignored.</param>
         /// <returns>The object got from the field/property</returns>
         /// <exception cref="ArgumentException">'name' is not found.</exception>
-        /// <exception cref="ArgumentException">The type of'obj' is not derived from 'objType'.</exception>
+        /// <exception cref="ArgumentException">'objType' is not assignable from 'obj'.</exception>
         /// <exception cref="ArgumentNullException">Arguments contain null.</exception>
         public static T GetPrivate<T>(this object obj, string name, Type objType)
         {
@@ -94,9 +94,9 @@ namespace System
         {
             if (obj == null) { throw new ArgumentNullException("obj"); }
             if (name == null) { throw new ArgumentNullException("name"); }
-            if (string.IsNullOrWhiteSpace(name)) { throw new ArgumentException("name has to be not null or white space.", "name"); }
+            if (string.IsNullOrWhiteSpace(name)) { throw new ArgumentException("name is empty or white-space.", "name"); }
             if (objType == null) { throw new ArgumentNullException("objType"); }
-            if (!objType.IsAssignableFrom(obj.GetType())) { throw new ArgumentException(objType + " is invalid type for this object", "objType"); }
+            if (!objType.IsAssignableFrom(obj.GetType())) { throw new ArgumentException($"{objType} is not assignable from {obj.GetType()}.", "objType"); }
 
             bool memberTypeMatching(Type actualType) => actualType == memberType;
 
@@ -109,14 +109,14 @@ namespace System
                 return new PrivateType(ownerType).GetStaticFieldOrProperty(name);
             }
 
-            throw new ArgumentException(((memberType != null) ? memberType + " " : "") + name + " is not found");
+            throw new ArgumentException(((memberType != null) ? memberType + " " : "") + name + " is not found.");
         }
 
         /// <summary>
         /// Get from private (and any other) static field/property.
         /// </summary>
-        /// <param name="type">The type to get</param>
-        /// <param name="name">The name of the static field/property to get</param>
+        /// <param name="type">The type to get from</param>
+        /// <param name="name">The name of the static field/property</param>
         /// <returns>The object got from the static field/property</returns>
         /// <exception cref="ArgumentException">'name' is not found.</exception>
         /// <exception cref="ArgumentNullException">Arguments contain null.</exception>
@@ -128,9 +128,9 @@ namespace System
         /// <summary>
         /// Get from private (and any other) static field/property.
         /// </summary>
-        /// <typeparam name="T">The type of the field/property to get</typeparam>
-        /// <param name="type">The type to get</param>
-        /// <param name="name">The name of the static field/property to get</param>
+        /// <typeparam name="T">The type of the field/property</typeparam>
+        /// <param name="type">The type to get from</param>
+        /// <param name="name">The name of the static field/property</param>
         /// <returns>The object got from the static field/property</returns>
         /// <exception cref="ArgumentException">'name' is not found.</exception>
         /// <exception cref="ArgumentNullException">Arguments contain null.</exception>
@@ -143,7 +143,7 @@ namespace System
         {
             if (type == null) { throw new ArgumentNullException("type"); }
             if (name == null) { throw new ArgumentNullException("name"); }
-            if (string.IsNullOrWhiteSpace(name)) { throw new ArgumentException("name has to be not null or white space.", "name"); }
+            if (string.IsNullOrWhiteSpace(name)) { throw new ArgumentException("name is empty or white-space.", "name"); }
 
             bool memberTypeMatching(Type actualType) => actualType == memberType;
 
@@ -152,16 +152,16 @@ namespace System
                 return new PrivateType(type).GetStaticFieldOrProperty(name);
             }
 
-            throw new ArgumentException(((memberType != null) ? memberType + " " : "") + name + " is not found");
+            throw new ArgumentException(((memberType != null) ? memberType + " " : "") + name + " is not found.");
         }
 
         /// <summary>
         /// Set to private (and any other) field/property.
         /// If the real type of specified object doesn't contain the specified field/property,
-        /// it will be automatically search from base type.
+        /// base types are searched automatically.
         /// </summary>
-        /// <param name="obj">The object to set</param>
-        /// <param name="name">The name of the field/property to set</param>
+        /// <param name="obj">The object to set to</param>
+        /// <param name="name">The name of the field/property</param>
         /// <param name="value">The value to set for 'name'</param>
         /// <exception cref="ArgumentException">'name' is not found.</exception>
         /// <exception cref="ArgumentNullException">Arguments contain null.</exception>
@@ -175,30 +175,30 @@ namespace System
         /// <summary>
         /// Set to private (and any other) field/property with assuming the specified object as specified type.
         /// If the specified type doesn't contain the specified field/property,
-        /// it will be automatically search from base type.
+        /// base types are searched automatically.
         /// </summary>
-        /// <param name="obj">The object to set</param>
-        /// <param name="name">The name of the field/property to set</param>
+        /// <param name="obj">The object to set to</param>
+        /// <param name="name">The name of the field/property</param>
         /// <param name="value">The value to set for 'name'</param>
         /// <param name="objType">The type of 'obj' for seaching member starting from. Real type of 'obj' is ignored.</param>
         /// <exception cref="ArgumentException">'name' is not found.</exception>
-        /// <exception cref="ArgumentException">The type of'obj' is not derived from 'objType'.</exception>
+        /// <exception cref="ArgumentException">'objType' is not assignable from 'obj'.</exception>
         /// <exception cref="ArgumentNullException">Arguments contain null.</exception>
         public static void SetPrivate<T>(this object obj, string name, T value, Type objType)
         {
             if (obj == null) { throw new ArgumentNullException("obj"); }
             if (name == null) { throw new ArgumentNullException("name"); }
-            if (string.IsNullOrWhiteSpace(name)) { throw new ArgumentException("name has to be not null or white space.", "name"); }
+            if (string.IsNullOrWhiteSpace(name)) { throw new ArgumentException("name is empty or white-space.", "name"); }
             if (value == null) { throw new ArgumentNullException("value"); }
             if (objType == null) { throw new ArgumentNullException("objType"); }
-            if (!objType.IsAssignableFrom(obj.GetType())) { throw new ArgumentException(objType + " is invalid type for this object", "objType"); }
+            if (!objType.IsAssignableFrom(obj.GetType())) { throw new ArgumentException($"{objType} is not assignable from {obj.GetType()}.", "objType"); }
 
             if (TrySetPrivate(obj, name, value, objType)) { return; }
 
             // retry for the case of getter only property
             if (TrySetPrivate(obj, GetBackingFieldName(name), value, objType)) { return; }
 
-            throw new ArgumentException(typeof(T) + " " + name + " is not found");
+            throw new ArgumentException($"{typeof(T)} {name} is not found.");
         }
 
         private static bool TrySetPrivate<T>(object obj, string name, T value, Type objType)
@@ -231,8 +231,8 @@ namespace System
         /// <summary>
         /// Set to private (and any other) static field/property.
         /// </summary>
-        /// <param name="type">The type to set</param>
-        /// <param name="name">The name of the field/property to set</param>
+        /// <param name="type">The type to set to</param>
+        /// <param name="name">The name of the field/property</param>
         /// <param name="value">The value to set for 'name'</param>
         /// <exception cref="ArgumentException">'name' is not found.</exception>
         /// <exception cref="ArgumentNullException">Arguments contain null.</exception>
@@ -240,14 +240,14 @@ namespace System
         {
             if (type == null) { throw new ArgumentNullException("type"); }
             if (name == null) { throw new ArgumentNullException("name"); }
-            if (string.IsNullOrWhiteSpace(name)) { throw new ArgumentException("name has to be not null or white space.", "name"); }
+            if (string.IsNullOrWhiteSpace(name)) { throw new ArgumentException("name is empty or white-space.", "name"); }
 
             if (TrySetPrivate(type, name, value)) { return; }
 
             // retry for the case of getter only property
             if (TrySetPrivate(type, GetBackingFieldName(name), value)) { return; }
 
-            throw new ArgumentException(typeof(T) + " " + name + " is not found");
+            throw new ArgumentException($"{typeof(T)} {name} is not found.");
         }
 
         private static bool TrySetPrivate<T>(this Type type, string name, T value)
