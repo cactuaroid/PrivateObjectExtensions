@@ -15,6 +15,8 @@ Supported platform:
 - .NET Framework 4.0+
 - .NET Core 2.0+
 
+PrivateObject/PrivateType codes are [copied from TestFX](https://github.com/cactuaroid/PrivateObjectExtensions/tree/master/PrivateObjectExtensions/testfx) for removing dependencies. [The classes are not included in .NET Core implementation](https://github.com/microsoft/testfx/issues/366) but that's why you can use this package on .NET Core.
+
 Sample
 ---
 ```csharp
