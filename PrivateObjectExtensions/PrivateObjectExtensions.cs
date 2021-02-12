@@ -32,7 +32,7 @@ namespace System
         /// <exception cref="ArgumentNullException">Arguments contain null.</exception>
         public static object GetPrivate(this object obj, string name)
         {
-            if (obj == null) { throw new ArgumentNullException("obj"); }
+            if (obj == null) { throw new ArgumentNullException(nameof(obj)); }
 
             return GetPrivate(obj, name, obj.GetType(), null);
         }
@@ -50,7 +50,7 @@ namespace System
         /// <exception cref="ArgumentNullException">Arguments contain null.</exception>
         public static T GetPrivate<T>(this object obj, string name)
         {
-            if (obj == null) { throw new ArgumentNullException("obj"); }
+            if (obj == null) { throw new ArgumentNullException(nameof(obj)); }
 
             return (T)GetPrivate(obj, name, obj.GetType(), typeof(T));
         }
@@ -92,11 +92,11 @@ namespace System
 
         private static object GetPrivate(object obj, string name, Type objType, Type memberType)
         {
-            if (obj == null) { throw new ArgumentNullException("obj"); }
-            if (name == null) { throw new ArgumentNullException("name"); }
-            if (string.IsNullOrWhiteSpace(name)) { throw new ArgumentException("name is empty or white-space.", "name"); }
-            if (objType == null) { throw new ArgumentNullException("objType"); }
-            if (!objType.IsAssignableFrom(obj.GetType())) { throw new ArgumentException($"{objType} is not assignable from {obj.GetType()}.", "objType"); }
+            if (obj == null) { throw new ArgumentNullException(nameof(obj)); }
+            if (name == null) { throw new ArgumentNullException(nameof(name)); }
+            if (string.IsNullOrWhiteSpace(name)) { throw new ArgumentException("name is empty or white-space.", nameof(name)); }
+            if (objType == null) { throw new ArgumentNullException(nameof(objType)); }
+            if (!objType.IsAssignableFrom(obj.GetType())) { throw new ArgumentException($"{objType} is not assignable from {obj.GetType()}.", nameof(objType)); }
 
             bool memberTypeMatching(Type actualType) => actualType == memberType;
 
@@ -141,9 +141,9 @@ namespace System
 
         private static object GetPrivate(this Type type, string name, Type memberType)
         {
-            if (type == null) { throw new ArgumentNullException("type"); }
-            if (name == null) { throw new ArgumentNullException("name"); }
-            if (string.IsNullOrWhiteSpace(name)) { throw new ArgumentException("name is empty or white-space.", "name"); }
+            if (type == null) { throw new ArgumentNullException(nameof(type)); }
+            if (name == null) { throw new ArgumentNullException(nameof(name)); }
+            if (string.IsNullOrWhiteSpace(name)) { throw new ArgumentException("name is empty or white-space.", nameof(name)); }
 
             bool memberTypeMatching(Type actualType) => actualType == memberType;
 
@@ -167,7 +167,7 @@ namespace System
         /// <exception cref="ArgumentNullException">Arguments contain null.</exception>
         public static void SetPrivate<T>(this object obj, string name, T value)
         {
-            if (obj == null) { throw new ArgumentNullException("obj"); }
+            if (obj == null) { throw new ArgumentNullException(nameof(obj)); }
 
             SetPrivate(obj, name, value, obj.GetType());
         }
@@ -186,12 +186,12 @@ namespace System
         /// <exception cref="ArgumentNullException">Arguments contain null.</exception>
         public static void SetPrivate<T>(this object obj, string name, T value, Type objType)
         {
-            if (obj == null) { throw new ArgumentNullException("obj"); }
-            if (name == null) { throw new ArgumentNullException("name"); }
-            if (string.IsNullOrWhiteSpace(name)) { throw new ArgumentException("name is empty or white-space.", "name"); }
-            if (value == null) { throw new ArgumentNullException("value"); }
-            if (objType == null) { throw new ArgumentNullException("objType"); }
-            if (!objType.IsAssignableFrom(obj.GetType())) { throw new ArgumentException($"{objType} is not assignable from {obj.GetType()}.", "objType"); }
+            if (obj == null) { throw new ArgumentNullException(nameof(obj)); }
+            if (name == null) { throw new ArgumentNullException(nameof(name)); }
+            if (string.IsNullOrWhiteSpace(name)) { throw new ArgumentException("name is empty or white-space.", nameof(name)); }
+            if (value == null) { throw new ArgumentNullException(nameof(value)); }
+            if (objType == null) { throw new ArgumentNullException(nameof(objType)); }
+            if (!objType.IsAssignableFrom(obj.GetType())) { throw new ArgumentException($"{objType} is not assignable from {obj.GetType()}.", nameof(objType)); }
 
             if (TrySetPrivate(obj, name, value, objType)) { return; }
 
@@ -238,9 +238,9 @@ namespace System
         /// <exception cref="ArgumentNullException">Arguments contain null.</exception>
         public static void SetPrivate<T>(this Type type, string name, T value)
         {
-            if (type == null) { throw new ArgumentNullException("type"); }
-            if (name == null) { throw new ArgumentNullException("name"); }
-            if (string.IsNullOrWhiteSpace(name)) { throw new ArgumentException("name is empty or white-space.", "name"); }
+            if (type == null) { throw new ArgumentNullException(nameof(type)); }
+            if (name == null) { throw new ArgumentNullException(nameof(name)); }
+            if (string.IsNullOrWhiteSpace(name)) { throw new ArgumentException("name is empty or white-space.", nameof(name)); }
 
             if (TrySetPrivate(type, name, value)) { return; }
 
