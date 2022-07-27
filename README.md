@@ -2,10 +2,12 @@ PrivateObjectExtensions
 ---
 [![NuGet](https://img.shields.io/nuget/v/PrivateObjectExtensions.svg)](https://www.nuget.org/packages/PrivateObjectExtensions)
 
-PrivateObjectExtensions provides extension methods of [PrivateObject](https://docs.microsoft.com/en-us/dotnet/api/microsoft.visualstudio.testtools.unittesting.privateobject) and [PrivateType](https://docs.microsoft.com/en-us/dotnet/api/microsoft.visualstudio.testtools.unittesting.privatetype) for unit test projects. This allows you to
+PrivateObjectExtensions provides extension methods for `object` type so that you can easily:
 - get/set private (and any other) fields/properties by simple extension methods,
 - even if the member is declared in base type, or
 - even if the property is getter only.
+
+Originally this package is a wrapper of [PrivateObject](https://docs.microsoft.com/en-us/dotnet/api/microsoft.visualstudio.testtools.unittesting.privateobject) and [PrivateType](https://docs.microsoft.com/en-us/dotnet/api/microsoft.visualstudio.testtools.unittesting.privatetype) of .NET Framework but [they are no longer available in .NET Core or later](https://github.com/microsoft/testfx/issues/366). Now the classes are [copied and included in this package](https://github.com/cactuaroid/PrivateObjectExtensions/tree/master/PrivateObjectExtensions/testfx) and has no dependencies.
 
 Requirements
 ---
@@ -14,8 +16,6 @@ No dependencies. You can use this library for any projects, but I recommend to u
 Supported platform:
 - .NET Framework 4.0+
 - .NET Core 2.0+
-
-PrivateObject/PrivateType codes are [copied from TestFX](https://github.com/cactuaroid/PrivateObjectExtensions/tree/master/PrivateObjectExtensions/testfx) for removing dependencies. [The classes are not included in .NET Core implementation](https://github.com/microsoft/testfx/issues/366) but that's why you can use this package on .NET Core.
 
 Sample
 ---
